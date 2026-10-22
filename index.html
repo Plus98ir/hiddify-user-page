@@ -611,7 +611,7 @@
         hint_reality: 'Looks like a visit to a well-known site: hard to block.', hint_udp: 'Fast on UDP; some networks block it.',
         hint_other: 'Special protocols, for apps that support them.', bot: 'Telegram bot', bot_sub: 'Get notified before your subscription ends', bot_connect: 'Connect to the bot',
         bot_connected: 'Your Telegram is connected', tg_proxy: 'Telegram proxy', tg_proxy_sub: 'Use Telegram without a VPN', open: 'Open', tools: 'Tools', speedtest: 'Speed test',
-        support: 'Support', more: 'More…', close: 'Close', qr_too_long: 'This link is too long for a QR code. Copy it instead.', load_error: 'Could not load. Check your connection and try again.',
+        support: 'Support', more: 'More…', close: 'Close', qr_too_long: 'This link is too long for a QR code. Copy it instead.', load_error: 'Could not load. Check your connection and try again.', retry: 'Try again',
         android: 'Android', ios: 'iOS', windows: 'Windows', mac: 'macOS', linux: 'Linux',
         google_play: 'Google Play', app_store: 'App Store', appimage: 'AppImage', snapcraft: 'Snap', microsoft_store: 'Microsoft Store', apk: 'APK', dmg: 'DMG', setup: 'Installer', portable: 'Portable', other: 'Download',
         theme_dark: 'Dark mode', theme_light: 'Light mode', refresh: 'Refresh'
@@ -629,7 +629,7 @@
         hint_reality: 'شبیه بازدید از یک سایت معروف؛ سخت فیلتر می‌شود.', hint_udp: 'سریع روی UDP؛ بعضی اپراتورها می‌بندند.',
         hint_other: 'پروتکل‌های خاص، برای برنامه‌هایی که پشتیبانی می‌کنند.', bot: 'ربات تلگرام', bot_sub: 'قبل از تمام شدن اشتراک خبردار شوید', bot_connect: 'اتصال به ربات',
         bot_connected: 'تلگرام شما وصل است', tg_proxy: 'پروکسی تلگرام', tg_proxy_sub: 'تلگرام بدون فیلترشکن', open: 'باز کردن', tools: 'ابزارها', speedtest: 'تست سرعت',
-        support: 'پشتیبانی', more: 'بیشتر…', close: 'بستن', qr_too_long: 'این لینک برای QR خیلی بلند است؛ کپی‌اش کنید.', load_error: 'بارگذاری نشد. اتصال را بررسی و دوباره تلاش کنید.',
+        support: 'پشتیبانی', more: 'بیشتر…', close: 'بستن', qr_too_long: 'این لینک برای QR خیلی بلند است؛ کپی‌اش کنید.', load_error: 'بارگذاری نشد. اتصال را بررسی و دوباره تلاش کنید.', retry: 'تلاش دوباره',
         android: 'اندروید', ios: 'آیفون', windows: 'ویندوز', mac: 'مک', linux: 'لینوکس',
         google_play: 'گوگل‌پلی', app_store: 'اپ‌استور', appimage: 'AppImage', snapcraft: 'Snap', microsoft_store: 'مایکروسافت‌استور', apk: 'APK', dmg: 'DMG', setup: 'نصبی', portable: 'پرتابل', other: 'دانلود',
         theme_dark: 'حالت تاریک', theme_light: 'حالت روشن', refresh: 'به‌روزرسانی'
@@ -722,9 +722,21 @@
     $('qrModal').addEventListener('click', function (e) { if (e.target === this) closeQr(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeQr(); });
 
+    /** One API call; a request that hangs (the panel restarting, a bad network) gives up after 25 s. */
     function api(path, opts) {
-      return fetch(API + path, Object.assign({ credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' } }, opts || {}))
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+      var ctl = window.AbortController ? new AbortController() : null;
+      var timer = ctl && setTimeout(function () { ctl.abort(); }, 25000);
+      return fetch(API + path, Object.assign({ credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache' }, signal: ctl && ctl.signal }, opts || {}))
+        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function (v) { clearTimeout(timer); return v; }, function (e) { clearTimeout(timer); throw e; });
+    }
+    /** GET with two more tries, 2 s and 5 s later. */
+    function apiRetry(path, tries) {
+      tries = tries === undefined ? 2 : tries;
+      return api(path).catch(function (e) {
+        if (!tries) throw e;
+        return new Promise(function (ok) { setTimeout(ok, tries === 2 ? 2000 : 5000); }).then(function () { return apiRetry(path, tries - 1); });
+      });
     }
 
     /* ---------- texts ---------- */
@@ -782,7 +794,7 @@
       if (me.telegram_proxy_enable) loadTg();
     }
     function loadMe() {
-      return api('me/').then(function (data) { me = data; renderMe(); }).catch(function () {
+      return apiRetry('me/').then(function (data) { me = data; renderMe(); }).catch(function () {
         $('usageValue').textContent = '–'; $('daysValue').textContent = '–';
         toast(t('load_error'));
       });
@@ -854,7 +866,7 @@
       var p = platform;
       if (appsCache[p]) { renderApps(appsCache[p]); return; }
       $('appsList').innerHTML = '<div class="skeleton" style="height:52px"></div><div class="skeleton" style="height:52px"></div><div class="skeleton" style="height:52px"></div>';
-      api('apps/?platform=' + p).then(function (list) {
+      apiRetry('apps/?platform=' + p).then(function (list) {
         appsCache[p] = list || [];
         if (p === platform) renderApps(appsCache[p]);
       }).catch(function () { if (p === platform) $('appsList').innerHTML = '<div class="error-box">' + esc(t('load_error')) + '</div>'; });
@@ -1000,14 +1012,21 @@
     });
     $('searchInput').addEventListener('input', function () { query = this.value; renderConfigs(); });
     function loadConfigs() {
-      return api('all-configs/').then(function (list) {
+      return apiRetry('all-configs/').then(function (list) {
         list = list || [];
         subs = list.filter(function (c) { return c.category === 'subscription'; });
         // Telegram proxies have their own card
         configs = list.filter(function (c) { return c.category !== 'subscription' && c.protocol !== 'tg'; });
         prepare(configs);
         renderConfigs();
-      }).catch(function () { $('configsList').innerHTML = '<div class="error-box">' + esc(t('load_error')) + '</div>'; });
+      }).catch(function () {
+        $('configsList').innerHTML = '<div class="error-box">' + esc(t('load_error')) +
+          ' <button class="btn btn-sm" type="button" id="cfgRetry">' + esc(t('retry')) + '</button></div>';
+        $('cfgRetry').addEventListener('click', function () {
+          $('configsList').innerHTML = '<div class="skeleton" style="height:52px"></div><div class="skeleton" style="height:52px"></div>';
+          loadConfigs();
+        });
+      });
     }
 
     /* ---------- telegram proxies ---------- */
