@@ -4,7 +4,13 @@ A one-file user page for [Hiddify Manager](https://github.com/hiddify/hiddify-ma
 glance, the link and QR code, apps per platform, and the configs grouped by kind (direct, CDN, REALITY, QUIC/UDP,
 other) and by server, in English and Persian, light and dark.
 
-No build step: `index.html`, two fonts and a QR library.
+No build step: `index.html`, three font files and a QR library.
+
+| Desktop (Persian, light) | Phone (Persian, dark) |
+| --- | --- |
+| ![desktop](screenshots/userpage_desk_light_fa.png) | ![phone](screenshots/userpage_phone_dark_fa.png) |
+
+English, dark: [screenshot](screenshots/userpage_desk_dark_en.png)
 
 ## Use it
 
