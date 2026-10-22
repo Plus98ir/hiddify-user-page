@@ -540,7 +540,7 @@
           </div>
           <div class="list">
             <div class="list-row"><span class="grow"><b>DoH</b> · <span class="ltr muted" id="dohText"></span></span><button class="btn btn-sm" type="button" id="copyDohBtn"><span data-t="copy"></span></button></div>
-            <a class="list-row hidden" id="speedRow" href="#" id="speedLink" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow" data-t="speedtest"></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+            <a class="list-row hidden" id="speedRow" href="#" target="_blank" rel="noopener" style="text-decoration:none"><span class="grow" data-t="speedtest"></span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
           </div>
         </section>
 
@@ -594,7 +594,7 @@
     document.getElementById('footBrand').textContent = BRAND;
     document.getElementById('footVersion').textContent = 'Hiddify ' + (H.version || '');
     // the panel sends /<proxy_path>/speedtest/ on to a speed test
-    document.getElementById('speedLink').href = '/' + H.proxy_path + '/speedtest/';
+    document.getElementById('speedRow').href = '/' + H.proxy_path + '/speedtest/';
 
     var T = {
       en: {
