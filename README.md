@@ -19,15 +19,9 @@ TA53aFyGNfSAcrCaJi9QmA9x5W47nPJcf7
 
 <div align="center">
 
-[🇬🇧 English](#english) | [🇮🇷 فارسی](#persian)
+[<img src="https://flagcdn.com/w40/us.png" width="20" alt=""> &nbsp;**English**](README.md) &nbsp;&nbsp;|&nbsp;&nbsp; [<img src="https://flagcdn.com/w40/ir.png" width="20" alt=""> &nbsp;**فارسی**](README.fa.md)
 
 </div>
-
----
-
-<a name="english"></a>
-
-## 🇬🇧 English
 
 A one-file user page for [Hiddify Manager](https://github.com/hiddify/hiddify-manager) panels: the subscription at a
 glance, the link and QR code, apps per platform, and the configs grouped by kind (direct, CDN, REALITY, QUIC/UDP,
@@ -67,59 +61,3 @@ Opened anywhere else, it only says that it is meant to be shown by a panel.
 
 - Vazir font: SIL Open Font License 1.1, by Saber Rastikerdar.
 - `js/qrcode.js`: MIT, by davidshimjs (QRCode.js).
-
----
-
-<a name="persian"></a>
-
-## 🇮🇷 فارسی
-
-<div align="center">
-
-[🇬🇧 English](#english) | [🇮🇷 فارسی](#persian)
-
-</div>
-
-<div dir="rtl">
-
-یک صفحه‌ی کاربر تک‌فایلی برای پنل‌های [Hiddify Manager](https://github.com/hiddify/hiddify-manager): خلاصه‌ی اشتراک در یک نگاه، لینک و QR کد، برنامه‌ها برای هر سیستم‌عامل، و کانفیگ‌ها دسته‌بندی‌شده بر اساس نوع (مستقیم، CDN، REALITY، QUIC/UDP، بقیه) و بر اساس سرور؛ فارسی و انگلیسی، روشن و تیره.
-
-بدون مرحله‌ی build: یک `index.html`، سه فایل فونت و یک کتابخانه‌ی QR.
-
-| دسکتاپ (فارسی، روشن) | گوشی (فارسی، تیره) |
-| --- | --- |
-| ![desktop](screenshots/userpage_desk_light_fa.png) | ![phone](screenshots/userpage_phone_dark_fa.png) |
-
-انگلیسی، تیره: [تصویر](screenshots/userpage_desk_dark_en.png)
-
-## استفاده
-
-در پنل: **Settings › Customizing User Page › User page URL**:
-
-</div>
-
-    https://github.com/Plus98ir/hiddify-user-page/tree/main
-
-<div dir="rtl">
-
-پنل خودش فایل‌ها را دانلود می‌کند و روی لینک اختصاصی هر کاربر نشان می‌دهد، پس کاربرها هیچ‌وقت به GitHub وصل نمی‌شوند.
-پنلی لازم است که تنظیم صفحه‌ی کاربر سفارشی را داشته باشد (hiddify/HiddifyPanel#79).
-
-برای تغییر دادن، این مخزن را fork کنید، `index.html` را ویرایش کنید و لینک fork خودتان را در همان تنظیم بگذارید.
-
-## چطور کار می‌کند
-
-پنل `window.__HIDDIFY__` را اول `<head>` می‌گذارد (بخش «Custom user page» در [hiddify-user-front](https://github.com/hiddify/hiddify-user-front) را ببینید). صفحه از این‌ها استفاده می‌کند:
-
-- `api_base`: API کاربر (`me/`، `all-configs/`، `apps/`، `mtproxies/`، `short/`)؛
-- `profile_url` و `deep_link`: لینک اشتراک، QR کد آن و دکمه‌ی برنامه‌ی Hiddify؛
-- `lang`، `brand_title`، `version`، `page_base`، `proxy_path`، `static_base`.
-
-اگر جای دیگری باز شود، فقط می‌گوید که باید از طریق پنل نمایش داده شود.
-
-## مجوزها
-
-- فونت وزیر: SIL Open Font License 1.1، اثر صابر راستی‌کردار.
-- `js/qrcode.js`: MIT، اثر davidshimjs (QRCode.js).
-
-</div>
